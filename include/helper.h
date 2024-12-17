@@ -109,32 +109,58 @@ namespace ezc {
 	template <typename T, typename Lambda = std::function<void()>>
 	void betterCin(
 		T* mainValue,
-		const std::string errorMessage,
+		const std::string& errorMessage,
 		const bool redColour = true,
 		Lambda lambda_function = []() {}
 	) {
 		bool validInput = false;
 		while (!validInput) {
-			std::cin >> *mainValue;
+			// Clear the error state of the stream
+			std::cin.clear();
 
-			if (std::cin.fail()) {
-				std::cin.clear();
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			if constexpr (std::is_same_v<T, std::string>) {
+				std::getline(std::cin, *mainValue); // Read the entire line for strings
 
-				// Display the error message
-				if (redColour) {
-					logger.RedLog(errorMessage); // Colored error message
-					std::cout << std::endl;
-				}
-				else {
-					std::cout << errorMessage << std::endl; // Regular error message
+				if (mainValue->empty()) { // Handle empty string input
+					if (redColour) {
+						logger.RedLog(errorMessage);
+						std::cout << std::endl;
+					}
+					else {
+						std::cout << errorMessage << std::endl;
+					}
+					continue; // Retry input
 				}
 			}
 			else {
-				lambda_function();
-				//mainValue = tempvalue; // set the mainvalue to the input
-				return;
+				std::cin >> *mainValue; // Read for other data types
+
+				if (std::cin.fail()) { // Handle input failure
+					std::cin.clear(); // Clear the error flag
+					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+					if (redColour) {
+						logger.RedLog(errorMessage);
+						std::cout << std::endl;
+					}
+					else {
+						std::cout << errorMessage << std::endl;
+					}
+					continue; // Retry input
+				}
+
+				// Discard any extra input after the valid input (e.g., leftover newline)
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
+
+			// Call the lambda function for custom validation or actions
+			lambda_function();
+
+			// Input is considered valid
+			validInput = true;
 		}
 	}
+
+
+
+
 } // namespace ezc

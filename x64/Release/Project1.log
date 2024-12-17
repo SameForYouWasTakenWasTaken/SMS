@@ -1,8 +1,2 @@
 ﻿  main.cpp
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 539 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  Project1.vcxproj -> D:\programming\vs\SMS_nocmake\Project1\x64\Release\Project1.exe
-  'pwsh.exe' is not recognized as an internal or external command,
-  operable program or batch file.
+LINK : fatal error LNK1104: cannot open file 'D:\programming\vs\SMS_nocmake\Project1\x64\Release\Project1.exe'
